@@ -1,7 +1,3 @@
-const BASE_API_URL = "http://jservice.io/api/";
-const NUM_CATEGORIES = 6;
-const NUM_CLUES_PER_CAT = 5;
-
 // categories is the main data structure for the app; it looks like this:
 
 //  [
@@ -22,6 +18,10 @@ const NUM_CLUES_PER_CAT = 5;
 //    ...
 //  ]
 
+const URL = "http://jservice.io/api/";
+const NUM_CATEGORIES = 6;
+const NUM_CLUES_PER_CAT = 5;
+
 
 let categories = [];
 
@@ -31,7 +31,7 @@ let categories = [];
  */
 
 async function getCategoryIds() {
-    let response = await axios.get(`${BASE_API_URL}categories?count=60`); //60 - # of categories that we can request
+    let response = await axios.get(`${URL}categories?count=6`); 
     let catIds = response.data.map (c => c.id);
     return catIds;
 }
@@ -50,8 +50,9 @@ async function getCategoryIds() {
  */
 
 async function getCategory(catId) {
-    let response = await axios.get(`${BASE_API_URL}category?id=${catId}`);
+    let response = await axios.get(`${URL}category?id=${catId}`);
     let cat = response.data;
+    console.log(cat)
     let randomClues = cat.clues;
     let clues = randomClues.map (c => ({
         question: c.question,
@@ -73,17 +74,23 @@ async function getCategory(catId) {
 
 async function fillTable() {
 
+    $("#jeopardy thead").empty();
     let $tr = $("<tr>");
     for (let catIds = 0; catIds < NUM_CATEGORIES; catIds++){
         $tr.append($("<th>").text(categories[catIds].title));
     }
     $("#jeopardy thead").append($tr);
 
-    $tr = $("<tr>");
-    for (letclueIds = 0; clueIds < categories.length; clueIds++){
-        $tr.append($("<td>").text(`${categories[clueIds].clues[0].question} - ${categories[clueIds].clues[0].answer}`));
+    $("#jeopardy tbody").empty();
+    for (let catIds = 0; catIds < NUM_CATEGORIES; catIds++){
+        $tr = $("<tr>");
+    for (letclueIds = 0; clueIds < NUM_CLUES_PER_CAT; clueIds++){
+        let $td = $("<td>");
+        $td.text(`${categories[catIds].clues[clueIds].question}`).attr("id", catIds + '-' + clueIds);
+        $tr.append($td);
     }
     $("#jeopardy tbody").append($tr);
+    }
 }
 
 /** Handle clicking on a clue: show the question or answer.
@@ -97,12 +104,16 @@ async function fillTable() {
 function handleClick(evt) {
     let id = evt.target.id;
     let [catId, clueId] = id.split("-");
+
     let clue = categories[catId].clues[clueId];
 
     let msg;
 
     if (!clue.showing) {
         msg = clue.question;
+        clue.showing = "question";
+    } else if (clue.showing === "question") {
+        msg = clue.answer;
         clue.showing = "answer";
     } else {
         return
@@ -115,6 +126,7 @@ function handleClick(evt) {
  */
 
 function showLoadingView() {
+    
 
 
 }
@@ -145,20 +157,15 @@ async function setupAndStart() {
 /** On click of start / restart button, set up game. */
 
 $("#restart").on("click", setupAndStart);
-    restart.addEventListener('click', function (){
-        location.reload();
-    })
-
+   
 // TODO
 
 /** On page load, add event handler for clicking clues */
-$(document).ready(function (){
-    alert("Ready!");
-});
 
 $(async function () {
     setupAndStart();
     $("#jeopardy").on("click", "td", handleClick);
-});
+    }   
+);
 
 // TODO

@@ -9,14 +9,14 @@
 /* latin */
 
   
-  body {
-    margin: 0;
-    padding: 0;
-    align-items: center;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+body {
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
     
 }
 
